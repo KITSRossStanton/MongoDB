@@ -35,7 +35,6 @@ public class SubDocLoader {
 			
 			while(!endLoop){
 				String line = br.readLine();
-				
 				if(line==null){//Finished file
 					endLoop = true;
 					commitTransaction(pos, tx);
@@ -43,13 +42,36 @@ public class SubDocLoader {
 				else{
 					String[] vals = line.split(",");
 					String id = vals[2];
+					String ean = vals[0];
+					float qty = Float.parseFloat(vals[4]);
 					
-					
+					//System.out.println("Processing EAN "+ean);
 					//System.out.println(prevID+" = "+id);
 					if(id.equals(prevID)){
 						Vector<Hashtable<String, Object>> lineItems = (Vector<Hashtable<String, Object>>)tx.get("LineItems");
-						lineItems.add(getItem(vals));
-						tx.put("LineItems", lineItems);
+						
+						//check for existence of EAN in hashtable already, increment QTY if exists.
+						boolean foundEAN = false;
+						for(int c=0; c<lineItems.size(); c++){
+							Hashtable<String, Object> lineHash = lineItems.elementAt(c);
+							if(lineHash.contains(ean)){
+								//System.out.println("Found EAN "+ean);
+								float f = Float.parseFloat(""+lineHash.get("QTY"));
+								f = f+qty;
+								lineHash.put("QTY", f);
+								lineItems.remove(c);
+								lineItems.add(lineHash);
+								tx.put("LineItems", lineItems);
+								foundEAN = true;
+								break;
+							}
+						}
+						
+						//If we haven't updated an existing line item then add a new line item.
+						if(!foundEAN){
+							lineItems.add(getItem(vals));
+							tx.put("LineItems", lineItems);
+						}
 					}
 					else{
 						System.out.println("New Transaction. Commit all previous data ("+counter+")");
@@ -82,7 +104,6 @@ public class SubDocLoader {
 		Hashtable<String, Object> item = new Hashtable<String, Object>();
 		item.put("EAN", vals[0]);
 		item.put("QTY", Float.parseFloat(vals[4]));	
-		
 		return item;
 	}
 	
