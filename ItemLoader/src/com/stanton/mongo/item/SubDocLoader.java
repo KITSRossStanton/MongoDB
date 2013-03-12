@@ -24,9 +24,9 @@ public class SubDocLoader {
 			//	MongoClient mongoClient = new MongoClient(Arrays.asList(new ServerAddress("localhost", 27017), new ServerAddress("localhost", 27018)));
 		
 			DB db = mongoClient.getDB("POS");
-			DBCollection pos = db.getCollection("POSTX");
+			DBCollection pos = db.getCollection("SMALLPOSTX");
 		
-			BufferedReader br = new BufferedReader(new FileReader(new File("C:/java/items.csv")));
+			BufferedReader br = new BufferedReader(new FileReader(new File("C:/java/0723-20130308-items.csv")));
 			
 			boolean endLoop = false;
 			String prevID = "";

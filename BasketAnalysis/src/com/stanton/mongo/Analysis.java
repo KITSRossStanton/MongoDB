@@ -30,13 +30,11 @@ public class Analysis {
 				System.out.println("Using Min Support of "+min_support);
 			}
 			Vector<String> candidates = new Vector<String>();
-			
-			Hashtable<String, Integer> map = new Hashtable<String, Integer>();
-			
+
 			MongoClient mongoClient = new MongoClient("localhost", 27017);
 	
 			DB db = mongoClient.getDB("POS");
-			DBCollection itemColl = db.getCollection("POSTX");
+			DBCollection itemColl = db.getCollection("SMALLPOSTX");
 
 			BasicDBList list = (BasicDBList)itemColl.distinct("LINEITEMS.EAN");
 			System.out.println(list.size()+" unique EANs, determining how many occur >"+min_support+" times");
